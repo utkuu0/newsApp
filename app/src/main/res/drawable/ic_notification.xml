@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    
+    <!-- News/Tech notification icon - stylized N -->
+    <path
+        android:pathData="M4,4 L4,20 L7,20 L7,10 L14,20 L20,20 L20,4 L17,4 L17,14 L10,4 Z"
+        android:fillColor="#FFFFFF"/>
+    
+    <!-- Small tech dot -->
+    <path
+        android:pathData="M21,3 m-2,0 a2,2 0 1,1 4,0 a2,2 0 1,1 -4,0"
+        android:fillColor="#FFFFFF"/>
+</vector>

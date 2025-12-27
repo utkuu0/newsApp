@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    
+    <!-- News/Tech Symbol - Stylized N with circuit elements -->
+    <group
+        android:translateX="24"
+        android:translateY="24">
+        
+        <!-- Main "N" shape representing News -->
+        <path
+            android:pathData="M12,12 L12,48 L18,48 L18,24 L36,48 L48,48 L48,12 L42,12 L42,36 L24,12 Z"
+            android:fillColor="#FFFFFF"/>
+        
+        <!-- Circuit dot top-left -->
+        <path
+            android:pathData="M8,8 m-3,0 a3,3 0 1,1 6,0 a3,3 0 1,1 -6,0"
+            android:fillColor="#EC4899"/>
+        
+        <!-- Circuit dot top-right -->
+        <path
+            android:pathData="M52,8 m-3,0 a3,3 0 1,1 6,0 a3,3 0 1,1 -6,0"
+            android:fillColor="#8B5CF6"/>
+        
+        <!-- Circuit dot bottom-left -->
+        <path
+            android:pathData="M8,52 m-3,0 a3,3 0 1,1 6,0 a3,3 0 1,1 -6,0"
+            android:fillColor="#8B5CF6"/>
+        
+        <!-- Circuit dot bottom-right -->
+        <path
+            android:pathData="M52,52 m-3,0 a3,3 0 1,1 6,0 a3,3 0 1,1 -6,0"
+            android:fillColor="#EC4899"/>
+    </group>
+</vector>

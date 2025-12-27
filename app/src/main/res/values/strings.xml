@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">TechNews</string>
+    <string name="app_name_full">Teknoloji Haberleri</string>
+    <string name="notification_channel_name">Günlük Haberler</string>
+    <string name="notification_channel_description">Günlük teknoloji haberleri bildirimleri</string>
+</resources>

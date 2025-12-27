@@ -1,0 +1,50 @@
+﻿> Task :app:clean FAILED
+.\gradlew : 
+At line:1 char:1
++ .\gradlew clean build 2>&1 | Out-File -Fi
+lePath build_output.txt -Enc ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified 
+   : (:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeComman 
+   dError
+ 
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':app:clean'.
+> java.io.IOException: Unable to delete dir
+ectory 'C:\Users\utkua\AndroidStudioProject
+s\haberUygulamas\app\build'
+    Failed to delete some children. This mi
+ght happen because a process has files open
+ or has its working directory set in the ta
+rget directory.
+    - C:\Users\utkua\AndroidStudioProjects\
+haberUygulamas\app\build\intermediates\comp
+ile_and_runtime_not_namespaced_r_class_jar\
+debug\processDebugResources\R.jar
+    - C:\Users\utkua\AndroidStudioProjects\
+haberUygulamas\app\build\intermediates\comp
+ile_and_runtime_not_namespaced_r_class_jar\
+debug\processDebugResources
+    - C:\Users\utkua\AndroidStudioProjects\
+haberUygulamas\app\build\intermediates\comp
+ile_and_runtime_not_namespaced_r_class_jar\
+debug
+    - C:\Users\utkua\AndroidStudioProjects\
+haberUygulamas\app\build\intermediates\comp
+ile_and_runtime_not_namespaced_r_class_jar
+    - C:\Users\utkua\AndroidStudioProjects\
+haberUygulamas\app\build\intermediates
+
+* Try:
+> Run with --stacktrace option to get the s
+tack trace.
+> Run with --info or --debug option to get 
+more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 3s
+1 actionable task: 1 executed
