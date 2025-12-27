@@ -12,8 +12,14 @@ interface ArticleDao {
     @Query("SELECT * FROM articles ORDER BY publishedAt DESC")
     fun getAllArticles(): Flow<List<ArticleEntity>>
 
+    @Query("SELECT * FROM articles WHERE category = :category ORDER BY publishedAt DESC")
+    fun getArticlesByCategory(category: String): Flow<List<ArticleEntity>>
+
     @Query("SELECT * FROM articles ORDER BY publishedAt DESC")
     suspend fun getAllArticlesList(): List<ArticleEntity>
+
+    @Query("SELECT * FROM articles WHERE category = :category ORDER BY publishedAt DESC")
+    suspend fun getArticlesByCategoryList(category: String): List<ArticleEntity>
 
     @Query("SELECT * FROM articles WHERE url = :url")
     suspend fun getArticleByUrl(url: String): ArticleEntity?
@@ -21,8 +27,10 @@ interface ArticleDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertArticles(articles: List<ArticleEntity>)
 
-    @Query("DELETE FROM articles")
-    suspend fun deleteAllArticles()
+    @Query("DELETE FROM articles") suspend fun deleteAllArticles()
+
+    @Query("DELETE FROM articles WHERE category = :category")
+    suspend fun deleteArticlesByCategory(category: String)
 
     @Query("DELETE FROM articles WHERE cachedAt < :timestamp")
     suspend fun deleteOldArticles(timestamp: Long)
