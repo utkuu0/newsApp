@@ -20,7 +20,7 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         // NewsAPI Key - Get your own at https://newsapi.org/
-        buildConfigField("String", "NEWS_API_KEY", "\"YOUR_API_KEY_HERE\"")
+        buildConfigField("String", "NEWS_API_KEY", "\"db3ef234988342efbd7baba001ed620e\"")
     }
 
     buildTypes {

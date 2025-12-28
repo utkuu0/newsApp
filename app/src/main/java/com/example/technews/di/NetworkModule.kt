@@ -1,5 +1,6 @@
 package com.example.technews.di
 
+import com.example.technews.BuildConfig
 import com.example.technews.data.remote.NewsApiService
 import dagger.Module
 import dagger.Provides
@@ -20,7 +21,11 @@ object NetworkModule {
     @Singleton
     fun provideOkHttpClient(): OkHttpClient {
         val loggingInterceptor = HttpLoggingInterceptor().apply {
-            level = HttpLoggingInterceptor.Level.BODY
+            level = if (BuildConfig.DEBUG) {
+                HttpLoggingInterceptor.Level.BODY
+            } else {
+                HttpLoggingInterceptor.Level.NONE
+            }
         }
 
         return OkHttpClient.Builder()
