@@ -77,12 +77,12 @@ app/
 
 2. **API Key'i ayarlayın:**
    
-   `app/build.gradle.kts` dosyasında NewsAPI key'i zaten tanımlı:
+   `app/build.gradle.kts` dosyasında `YOUR_API_KEY_HERE` yazan yeri kendi API key'iniz ile değiştirin:
    ```kotlin
-   buildConfigField("String", "NEWS_API_KEY", "\"YOUR_API_KEY\"")
+   buildConfigField("String", "NEWS_API_KEY", "\"YOUR_API_KEY_HERE\"")
    ```
    
-   > 💡 Kendi API key'inizi [NewsAPI.org](https://newsapi.org/) adresinden alabilirsiniz.
+   > ⚠️ **Önemli:** Uygulamayı çalıştırmak için [NewsAPI.org](https://newsapi.org/) adresinden ücretsiz API key almanız gerekmektedir. Kayıt olduktan sonra aldığınız key'i yukarıdaki alana yapıştırın.
 
 3. **Projeyi çalıştırın:**
    ```bash

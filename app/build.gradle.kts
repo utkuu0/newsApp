@@ -14,13 +14,13 @@ android {
         applicationId = "com.example.technews"
         minSdk = 26
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "1.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        // NewsAPI Key
-        buildConfigField("String", "NEWS_API_KEY", "\"db3ef234988342efbd7baba001ed620e\"")
+        // NewsAPI Key - Get your own at https://newsapi.org/
+        buildConfigField("String", "NEWS_API_KEY", "\"YOUR_API_KEY_HERE\"")
     }
 
     buildTypes {

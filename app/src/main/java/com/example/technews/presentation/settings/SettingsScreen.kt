@@ -217,7 +217,7 @@ fun SettingsScreen(onBackClick: () -> Unit, viewModel: SettingsViewModel = hiltV
                                 AboutItem(
                                         icon = Icons.Default.Code,
                                         title = "Teknoloji Haberleri",
-                                        subtitle = "Versiyon 1.0.0"
+                                        subtitle = "Versiyon 1.1.0"
                                 )
 
                                 Spacer(modifier = Modifier.height(12.dp))
@@ -370,9 +370,10 @@ private fun PremiumToggleItem(
                                 SwitchDefaults.colors(
                                         checkedThumbColor = Color.White,
                                         checkedTrackColor = GradientStart,
-                                        uncheckedThumbColor = MaterialTheme.colorScheme.outline,
-                                        uncheckedTrackColor =
-                                                MaterialTheme.colorScheme.surfaceVariant
+                                        checkedBorderColor = GradientStart,
+                                        uncheckedThumbColor = Color.White,
+                                        uncheckedTrackColor = Color(0xFF4B5563),
+                                        uncheckedBorderColor = Color(0xFF6B7280)
                                 )
                 )
         }

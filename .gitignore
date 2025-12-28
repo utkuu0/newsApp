@@ -13,3 +13,9 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# Log files
+*.log
+build_log.txt
+crash_log.txt
+logcat.txt
