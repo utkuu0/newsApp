@@ -7,7 +7,10 @@ import kotlinx.coroutines.flow.Flow
 interface NewsRepository {
     fun getArticles(): Flow<List<Article>>
     fun getArticlesByCategory(category: NewsCategory): Flow<List<Article>>
+    fun getSavedArticles(): Flow<List<Article>>
     suspend fun refreshArticles(category: NewsCategory): Result<Unit>
     suspend fun refreshAllCategories(): Result<Unit>
     suspend fun getArticleByUrl(url: String): Article?
+    suspend fun toggleSaveArticle(url: String)
+    suspend fun isArticleSaved(url: String): Boolean
 }

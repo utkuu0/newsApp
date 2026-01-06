@@ -5,6 +5,20 @@ import com.example.technews.data.remote.dto.ArticleDto
 import com.example.technews.domain.model.Article
 import com.example.technews.domain.model.NewsCategory
 
+// HTML etiketlerini temizleyen yardımcı fonksiyon
+private fun String?.stripHtmlTags(): String {
+    if (this.isNullOrBlank()) return ""
+    return this.replace(Regex("<[^>]*>"), "") // HTML etiketlerini kaldır
+            .replace("&nbsp;", " ")
+            .replace("&amp;", "&")
+            .replace("&lt;", "<")
+            .replace("&gt;", ">")
+            .replace("&quot;", "\"")
+            .replace("&#39;", "'")
+            .replace(Regex("\\s+"), " ") // Fazla boşlukları tek boşluğa çevir
+            .trim()
+}
+
 fun ArticleDto.toEntity(category: NewsCategory = NewsCategory.GENERAL): ArticleEntity? {
     // Skip articles without title or url
     if (title.isNullOrBlank() || url.isNullOrBlank()) return null
@@ -14,10 +28,10 @@ fun ArticleDto.toEntity(category: NewsCategory = NewsCategory.GENERAL): ArticleE
             sourceName = source?.name,
             author = author,
             title = title,
-            description = description,
+            description = description?.stripHtmlTags(),
             urlToImage = urlToImage,
             publishedAt = publishedAt,
-            content = content,
+            content = content?.stripHtmlTags(),
             category = category.apiName
     )
 }
@@ -28,11 +42,12 @@ fun ArticleEntity.toDomain(): Article {
             sourceName = sourceName ?: "Unknown",
             author = author ?: "Unknown",
             title = title,
-            description = description ?: "",
+            description = (description ?: "").stripHtmlTags(),
             urlToImage = urlToImage,
             publishedAt = publishedAt ?: "",
-            content = content ?: "",
-            category = NewsCategory.fromApiName(category)
+            content = (content ?: "").stripHtmlTags(),
+            category = NewsCategory.fromApiName(category),
+            isSaved = isSaved
     )
 }
 

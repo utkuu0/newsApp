@@ -9,6 +9,7 @@ import androidx.navigation.navArgument
 import com.example.technews.domain.repository.NewsRepository
 import com.example.technews.presentation.detail.ArticleDetailScreen
 import com.example.technews.presentation.newslist.NewsListScreen
+import com.example.technews.presentation.saved.SavedArticlesScreen
 import com.example.technews.presentation.settings.SettingsScreen
 
 @Composable
@@ -19,7 +20,8 @@ fun NavGraph(navController: NavHostController, repository: NewsRepository) {
                     onArticleClick = { articleUrl ->
                         navController.navigate(Screen.ArticleDetail.createRoute(articleUrl))
                     },
-                    onSettingsClick = { navController.navigate(Screen.Settings.route) }
+                    onSettingsClick = { navController.navigate(Screen.Settings.route) },
+                    onSavedClick = { navController.navigate(Screen.SavedArticles.route) }
             )
         }
 
@@ -37,6 +39,15 @@ fun NavGraph(navController: NavHostController, repository: NewsRepository) {
 
         composable(route = Screen.Settings.route) {
             SettingsScreen(onBackClick = { navController.popBackStack() })
+        }
+
+        composable(route = Screen.SavedArticles.route) {
+            SavedArticlesScreen(
+                    onBackClick = { navController.popBackStack() },
+                    onArticleClick = { articleUrl ->
+                        navController.navigate(Screen.ArticleDetail.createRoute(articleUrl))
+                    }
+            )
         }
     }
 }

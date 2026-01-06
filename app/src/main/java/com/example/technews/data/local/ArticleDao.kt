@@ -34,4 +34,14 @@ interface ArticleDao {
 
     @Query("DELETE FROM articles WHERE cachedAt < :timestamp")
     suspend fun deleteOldArticles(timestamp: Long)
+
+    // Kaydedilen makaleler için yeni metodlar
+    @Query("SELECT * FROM articles WHERE isSaved = 1 ORDER BY publishedAt DESC")
+    fun getSavedArticles(): Flow<List<ArticleEntity>>
+
+    @Query("UPDATE articles SET isSaved = :isSaved WHERE url = :url")
+    suspend fun updateSavedStatus(url: String, isSaved: Boolean)
+
+    @Query("SELECT isSaved FROM articles WHERE url = :url")
+    suspend fun isArticleSaved(url: String): Boolean?
 }

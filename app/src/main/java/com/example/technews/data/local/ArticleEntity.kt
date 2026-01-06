@@ -14,5 +14,6 @@ data class ArticleEntity(
         val publishedAt: String?,
         val content: String?,
         val category: String = "general",
-        val cachedAt: Long = System.currentTimeMillis()
+        val cachedAt: Long = System.currentTimeMillis(),
+        val isSaved: Boolean = false
 )

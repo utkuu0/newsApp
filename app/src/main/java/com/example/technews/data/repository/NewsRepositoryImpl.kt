@@ -29,6 +29,10 @@ constructor(private val api: NewsApiService, private val dao: ArticleDao) : News
         }
     }
 
+    override fun getSavedArticles(): Flow<List<Article>> {
+        return dao.getSavedArticles().map { entities -> entities.toDomainList() }
+    }
+
     override suspend fun refreshArticles(category: NewsCategory): Result<Unit> {
         return try {
             val response =
@@ -76,5 +80,14 @@ constructor(private val api: NewsApiService, private val dao: ArticleDao) : News
 
     override suspend fun getArticleByUrl(url: String): Article? {
         return dao.getArticleByUrl(url)?.toDomain()
+    }
+
+    override suspend fun toggleSaveArticle(url: String) {
+        val currentStatus = dao.isArticleSaved(url) ?: false
+        dao.updateSavedStatus(url, !currentStatus)
+    }
+
+    override suspend fun isArticleSaved(url: String): Boolean {
+        return dao.isArticleSaved(url) ?: false
     }
 }

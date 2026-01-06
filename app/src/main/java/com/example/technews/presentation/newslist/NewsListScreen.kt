@@ -32,6 +32,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Movie
 import androidx.compose.material.icons.filled.Newspaper
@@ -87,6 +88,7 @@ import java.util.Locale
 fun NewsListScreen(
         onArticleClick: (String) -> Unit,
         onSettingsClick: () -> Unit,
+        onSavedClick: () -> Unit,
         viewModel: NewsListViewModel = hiltViewModel()
 ) {
         val state by viewModel.state.collectAsState()
@@ -139,7 +141,8 @@ fun NewsListScreen(
                                                 gradientStart = gradientStart,
                                                 gradientEnd = gradientEnd,
                                                 onRefreshClick = { viewModel.refreshNews() },
-                                                onSettingsClick = onSettingsClick
+                                                onSettingsClick = onSettingsClick,
+                                                onSavedClick = onSavedClick
                                         )
                                 }
 
@@ -280,7 +283,8 @@ private fun PremiumHeader(
         gradientStart: Color,
         gradientEnd: Color,
         onRefreshClick: () -> Unit,
-        onSettingsClick: () -> Unit
+        onSettingsClick: () -> Unit,
+        onSavedClick: () -> Unit
 ) {
         Box(
                 modifier =
@@ -335,6 +339,24 @@ private fun PremiumHeader(
                                                 Icon(
                                                         imageVector = Icons.Default.Refresh,
                                                         contentDescription = "Yenile",
+                                                        tint = Color.White
+                                                )
+                                        }
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                        IconButton(
+                                                onClick = onSavedClick,
+                                                modifier =
+                                                        Modifier.size(44.dp)
+                                                                .background(
+                                                                        Color.White.copy(
+                                                                                alpha = 0.2f
+                                                                        ),
+                                                                        CircleShape
+                                                                )
+                                        ) {
+                                                Icon(
+                                                        imageVector = Icons.Default.Bookmark,
+                                                        contentDescription = "Kaydedilenler",
                                                         tint = Color.White
                                                 )
                                         }
