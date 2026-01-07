@@ -4,8 +4,8 @@ import com.example.technews.BuildConfig
 import com.example.technews.data.local.ArticleDao
 import com.example.technews.data.mapper.toDomain
 import com.example.technews.data.mapper.toDomainList
-import com.example.technews.data.mapper.toEntityList
-import com.example.technews.data.remote.NewsApiService
+import com.example.technews.data.mapper.toGNewsEntityList
+import com.example.technews.data.remote.GNewsApiService
 import com.example.technews.domain.model.Article
 import com.example.technews.domain.model.NewsCategory
 import com.example.technews.domain.repository.NewsRepository
@@ -17,7 +17,10 @@ import kotlinx.coroutines.flow.map
 @Singleton
 class NewsRepositoryImpl
 @Inject
-constructor(private val api: NewsApiService, private val dao: ArticleDao) : NewsRepository {
+constructor(
+    private val gNewsApi: GNewsApiService,
+    private val dao: ArticleDao
+) : NewsRepository {
 
     override fun getArticles(): Flow<List<Article>> {
         return dao.getAllArticles().map { entities -> entities.toDomainList() }
@@ -35,39 +38,52 @@ constructor(private val api: NewsApiService, private val dao: ArticleDao) : News
 
     override suspend fun refreshArticles(category: NewsCategory): Result<Unit> {
         return try {
-            val response =
-                    api.getTopHeadlines(
-                            category = category.apiName,
-                            language = "en",
-                            apiKey = BuildConfig.NEWS_API_KEY
-                    )
+            val gNewsCategory = mapCategoryToGNews(category)
+            val response = gNewsApi.getTopHeadlines(
+                category = gNewsCategory,
+                language = "en",
+                max = 10,
+                apiKey = BuildConfig.GNEWS_API_KEY
+            )
 
-            if (response.status == "ok") {
-                val entities = response.articles.toEntityList(category)
-                // Clear old articles for this category and insert new ones
+            if (response.articles.isNotEmpty()) {
+                val entities = response.articles.toGNewsEntityList(category)
                 dao.deleteArticlesByCategory(category.apiName)
                 dao.insertArticles(entities)
                 Result.success(Unit)
             } else {
-                Result.failure(Exception("API returned error status"))
+                Result.failure(Exception("No articles found"))
             }
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
 
+    private fun mapCategoryToGNews(category: NewsCategory): String {
+        return when (category) {
+            NewsCategory.GENERAL -> "general"
+            NewsCategory.TECHNOLOGY -> "technology"
+            NewsCategory.BUSINESS -> "business"
+            NewsCategory.SCIENCE -> "science"
+            NewsCategory.HEALTH -> "health"
+            NewsCategory.SPORTS -> "sports"
+            NewsCategory.ENTERTAINMENT -> "entertainment"
+        }
+    }
+
     override suspend fun refreshAllCategories(): Result<Unit> {
         return try {
             NewsCategory.entries.forEach { category ->
-                val response =
-                        api.getTopHeadlines(
-                                category = category.apiName,
-                                language = "en",
-                                apiKey = BuildConfig.NEWS_API_KEY
-                        )
+                val gNewsCategory = mapCategoryToGNews(category)
+                val response = gNewsApi.getTopHeadlines(
+                    category = gNewsCategory,
+                    language = "en",
+                    max = 10,
+                    apiKey = BuildConfig.GNEWS_API_KEY
+                )
 
-                if (response.status == "ok") {
-                    val entities = response.articles.toEntityList(category)
+                if (response.articles.isNotEmpty()) {
+                    val entities = response.articles.toGNewsEntityList(category)
                     dao.deleteArticlesByCategory(category.apiName)
                     dao.insertArticles(entities)
                 }

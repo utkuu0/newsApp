@@ -1,7 +1,7 @@
 package com.example.technews.di
 
 import com.example.technews.BuildConfig
-import com.example.technews.data.remote.NewsApiService
+import com.example.technews.data.remote.GNewsApiService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -40,7 +40,7 @@ object NetworkModule {
     @Singleton
     fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
         return Retrofit.Builder()
-            .baseUrl(NewsApiService.BASE_URL)
+            .baseUrl(GNewsApiService.BASE_URL)
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
@@ -48,7 +48,7 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideNewsApiService(retrofit: Retrofit): NewsApiService {
-        return retrofit.create(NewsApiService::class.java)
+    fun provideGNewsApiService(retrofit: Retrofit): GNewsApiService {
+        return retrofit.create(GNewsApiService::class.java)
     }
 }
