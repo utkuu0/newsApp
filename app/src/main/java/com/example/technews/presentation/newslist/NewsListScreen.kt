@@ -29,17 +29,13 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Movie
 import androidx.compose.material.icons.filled.Newspaper
 import androidx.compose.material.icons.filled.PhoneAndroid
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Science
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.SportsSoccer
 import androidx.compose.material.icons.filled.TrendingUp
 import androidx.compose.material.icons.outlined.AccessTime
@@ -50,7 +46,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -87,12 +82,18 @@ import java.util.Locale
 @Composable
 fun NewsListScreen(
         onArticleClick: (String) -> Unit,
-        onSettingsClick: () -> Unit,
-        onSavedClick: () -> Unit,
+        refreshTrigger: Int = 0,
         viewModel: NewsListViewModel = hiltViewModel()
 ) {
         val state by viewModel.state.collectAsState()
         val snackbarHostState = remember { SnackbarHostState() }
+
+        // Refresh when trigger changes
+        LaunchedEffect(refreshTrigger) {
+                if (refreshTrigger > 0) {
+                        viewModel.refreshNews()
+                }
+        }
 
         // Animate category color
         val categoryColor by
@@ -139,10 +140,7 @@ fun NewsListScreen(
                                         PremiumHeader(
                                                 category = state.selectedCategory,
                                                 gradientStart = gradientStart,
-                                                gradientEnd = gradientEnd,
-                                                onRefreshClick = { viewModel.refreshNews() },
-                                                onSettingsClick = onSettingsClick,
-                                                onSavedClick = onSavedClick
+                                                gradientEnd = gradientEnd
                                         )
                                 }
 
@@ -281,10 +279,7 @@ fun NewsListScreen(
 private fun PremiumHeader(
         category: NewsCategory,
         gradientStart: Color,
-        gradientEnd: Color,
-        onRefreshClick: () -> Unit,
-        onSettingsClick: () -> Unit,
-        onSavedClick: () -> Unit
+        gradientEnd: Color
 ) {
         Box(
                 modifier =
@@ -298,88 +293,24 @@ private fun PremiumHeader(
                                 .padding(horizontal = 20.dp, vertical = 24.dp)
         ) {
                 Column {
-                        Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                        ) {
-                                Column {
-                                        Text(
-                                                text = category.displayName,
-                                                style =
-                                                        MaterialTheme.typography.headlineLarge.copy(
-                                                                fontWeight = FontWeight.Bold
-                                                        ),
-                                                color = Color.White
-                                        )
-                                        Text(
-                                                text = "Haberleri",
-                                                style =
-                                                        MaterialTheme.typography.headlineMedium
-                                                                .copy(
-                                                                        fontWeight =
-                                                                                FontWeight.Light
-                                                                ),
-                                                color = Color.White.copy(alpha = 0.9f)
-                                        )
-                                }
-
-                                Row {
-                                        IconButton(
-                                                onClick = onRefreshClick,
-                                                modifier =
-                                                        Modifier.size(44.dp)
-                                                                .background(
-                                                                        Color.White.copy(
-                                                                                alpha = 0.2f
-                                                                        ),
-                                                                        CircleShape
-                                                                )
-                                        ) {
-                                                Icon(
-                                                        imageVector = Icons.Default.Refresh,
-                                                        contentDescription = "Yenile",
-                                                        tint = Color.White
-                                                )
-                                        }
-                                        Spacer(modifier = Modifier.width(8.dp))
-                                        IconButton(
-                                                onClick = onSavedClick,
-                                                modifier =
-                                                        Modifier.size(44.dp)
-                                                                .background(
-                                                                        Color.White.copy(
-                                                                                alpha = 0.2f
-                                                                        ),
-                                                                        CircleShape
-                                                                )
-                                        ) {
-                                                Icon(
-                                                        imageVector = Icons.Default.Bookmark,
-                                                        contentDescription = "Kaydedilenler",
-                                                        tint = Color.White
-                                                )
-                                        }
-                                        Spacer(modifier = Modifier.width(8.dp))
-                                        IconButton(
-                                                onClick = onSettingsClick,
-                                                modifier =
-                                                        Modifier.size(44.dp)
-                                                                .background(
-                                                                        Color.White.copy(
-                                                                                alpha = 0.2f
-                                                                        ),
-                                                                        CircleShape
-                                                                )
-                                        ) {
-                                                Icon(
-                                                        imageVector = Icons.Default.Settings,
-                                                        contentDescription = "Ayarlar",
-                                                        tint = Color.White
-                                                )
-                                        }
-                                }
-                        }
+                        Text(
+                                text = category.displayName,
+                                style =
+                                        MaterialTheme.typography.headlineLarge.copy(
+                                                fontWeight = FontWeight.Bold
+                                        ),
+                                color = Color.White
+                        )
+                        Text(
+                                text = "Haberleri",
+                                style =
+                                        MaterialTheme.typography.headlineMedium
+                                                .copy(
+                                                        fontWeight =
+                                                                FontWeight.Light
+                                                ),
+                                color = Color.White.copy(alpha = 0.9f)
+                        )
 
                         Spacer(modifier = Modifier.height(8.dp))
 

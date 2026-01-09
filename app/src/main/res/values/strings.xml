@@ -4,4 +4,42 @@
     <string name="app_name_full">Teknoloji Haberleri</string>
     <string name="notification_channel_name">Günlük Haberler</string>
     <string name="notification_channel_description">Günlük teknoloji haberleri bildirimleri</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">Ana Sayfa</string>
+    <string name="nav_saved">Kaydedilenler</string>
+    <string name="nav_settings">Ayarlar</string>
+
+    <!-- Home Screen -->
+    <string name="no_news">Haber bulunamadı</string>
+    <string name="loading">Yükleniyor…</string>
+    <string name="error_loading">Haberler yüklenirken hata oluştu</string>
+    <string name="retry">Tekrar Dene</string>
+    <string name="category_news">%s Haberleri</string>
+    <string name="trending">Gündemdekiler</string>
+
+    <!-- Saved Screen -->
+    <string name="no_saved_news">Henüz kayıtlı haber yok</string>
+    <string name="saved_news">Kaydedilenler</string>
+    <string name="saved_news_subtitle">Kaydettiğiniz haberler</string>
+    <string name="no_saved_news_hint">Haberleri kaydetmek için detay sayfasındaki bookmark ikonuna tıklayın</string>
+    <string name="remove_from_saved">Kayıttan Kaldır</string>
+
+    <!-- Snackbar Messages -->
+    <string name="news_saved">Haber kaydedildi</string>
+    <string name="news_removed">Haber kaldırıldı</string>
+
+    <!-- Settings -->
+    <string name="settings">Ayarlar</string>
+    <string name="dark_mode">Karanlık Mod</string>
+    <string name="notifications">Bildirimler</string>
+    <string name="about">Hakkında</string>
+    <string name="version">Versiyon</string>
+    <string name="developer">Geliştirici</string>
+    <string name="appearance">Görünüm</string>
+    <string name="customize_experience">Deneyiminizi özelleştirin</string>
+
+    <!-- General -->
+    <string name="back">Geri</string>
+    <string name="refresh">Yenile</string>
 </resources>

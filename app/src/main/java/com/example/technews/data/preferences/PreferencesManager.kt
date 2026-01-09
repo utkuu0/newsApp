@@ -6,9 +6,11 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.longPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -33,6 +35,10 @@ class PreferencesManager @Inject constructor(
         preferences[LAST_OPENED_KEY] ?: 0L
     }
 
+    val appLanguage: Flow<String> = dataStore.data.map { preferences ->
+        preferences[LANGUAGE_KEY] ?: "system"
+    }
+
     suspend fun setDarkMode(enabled: Boolean) {
         dataStore.edit { preferences ->
             preferences[DARK_MODE_KEY] = enabled
@@ -43,6 +49,16 @@ class PreferencesManager @Inject constructor(
         dataStore.edit { preferences ->
             preferences[NOTIFICATIONS_KEY] = enabled
         }
+    }
+
+    suspend fun setAppLanguage(language: String) {
+        dataStore.edit { preferences ->
+            preferences[LANGUAGE_KEY] = language
+        }
+    }
+
+    suspend fun getAppLanguageSync(): String {
+        return dataStore.data.first()[LANGUAGE_KEY] ?: "system"
     }
 
     suspend fun updateLastOpenedTime() {
@@ -63,5 +79,6 @@ class PreferencesManager @Inject constructor(
         private val DARK_MODE_KEY = booleanPreferencesKey("dark_mode")
         private val NOTIFICATIONS_KEY = booleanPreferencesKey("notifications_enabled")
         private val LAST_OPENED_KEY = longPreferencesKey("last_opened_time")
+        private val LANGUAGE_KEY = stringPreferencesKey("app_language")
     }
 }

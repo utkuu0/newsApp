@@ -16,7 +16,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 @HiltViewModel
-class NewsListViewModel @Inject constructor(private val repository: NewsRepository) : ViewModel() {
+class NewsListViewModel @Inject constructor(
+    private val repository: NewsRepository
+) : ViewModel() {
 
     private val _state = MutableStateFlow(NewsListState())
     val state: StateFlow<NewsListState> = _state.asStateFlow()

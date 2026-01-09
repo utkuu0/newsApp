@@ -20,10 +20,8 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.BookmarkRemove
 import androidx.compose.material.icons.outlined.AccessTime
 import androidx.compose.material.icons.outlined.BookmarkBorder
@@ -34,46 +32,65 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
+import com.example.technews.R
 import com.example.technews.domain.model.Article
-import com.example.technews.ui.theme.GradientEnd
-import com.example.technews.ui.theme.GradientMiddle
 import com.example.technews.ui.theme.GradientStart
+import kotlinx.coroutines.flow.collectLatest
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 @Composable
 fun SavedArticlesScreen(
-        onBackClick: () -> Unit,
         onArticleClick: (String) -> Unit,
+        categoryColor: Color = GradientStart,
         viewModel: SavedArticlesViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
 
-    Scaffold(containerColor = MaterialTheme.colorScheme.background) { paddingValues ->
+    LaunchedEffect(Unit) {
+        viewModel.snackbarEvent.collectLatest { messageRes ->
+            snackbarHostState.showSnackbar(
+                message = viewModel.getSnackbarMessage(messageRes),
+                duration = SnackbarDuration.Short
+            )
+        }
+    }
+
+    Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
+        snackbarHost = { SnackbarHost(snackbarHostState) }
+    ) { paddingValues ->
         Column(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
             // Header
-            SavedArticlesHeader(onBackClick = onBackClick)
+            SavedArticlesHeader(categoryColor = categoryColor)
 
             // Content
             when {
-                state.isLoading -> LoadingState()
-                state.articles.isEmpty() -> EmptyState()
+                state.isLoading -> LoadingState(categoryColor = categoryColor)
+                state.articles.isEmpty() -> EmptyState(categoryColor = categoryColor)
                 else -> {
                     LazyColumn(
                             modifier = Modifier.fillMaxSize(),
@@ -93,6 +110,7 @@ fun SavedArticlesScreen(
                             ) {
                                 SavedArticleCard(
                                         article = article,
+                                        categoryColor = categoryColor,
                                         onClick = { onArticleClick(article.url) },
                                         onRemove = { viewModel.removeFromSaved(article.url) }
                                 )
@@ -106,7 +124,7 @@ fun SavedArticlesScreen(
 }
 
 @Composable
-private fun SavedArticlesHeader(onBackClick: () -> Unit) {
+private fun SavedArticlesHeader(categoryColor: Color) {
     Box(
             modifier =
                     Modifier.fillMaxWidth()
@@ -114,52 +132,35 @@ private fun SavedArticlesHeader(onBackClick: () -> Unit) {
                                     Brush.verticalGradient(
                                             colors =
                                                     listOf(
-                                                            GradientStart,
-                                                            GradientMiddle,
-                                                            GradientEnd
+                                                            categoryColor,
+                                                            categoryColor.copy(alpha = 0.8f),
+                                                            categoryColor.copy(alpha = 0.6f)
                                                     )
                                     )
                             )
                             .statusBarsPadding()
                             .padding(horizontal = 16.dp, vertical = 20.dp)
     ) {
-        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            IconButton(
-                    onClick = onBackClick,
-                    modifier =
-                            Modifier.size(44.dp)
-                                    .background(Color.White.copy(alpha = 0.2f), CircleShape)
-            ) {
-                Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Geri",
-                        tint = Color.White
-                )
-            }
-
-            Spacer(modifier = Modifier.width(16.dp))
-
-            Column {
-                Text(
-                        text = "Kaydedilenler",
-                        style =
-                                MaterialTheme.typography.headlineMedium.copy(
-                                        fontWeight = FontWeight.Bold
-                                ),
-                        color = Color.White
-                )
-                Text(
-                        text = "Kaydettiğiniz haberler",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = Color.White.copy(alpha = 0.8f)
-                )
-            }
+        Column {
+            Text(
+                    text = stringResource(R.string.saved_news),
+                    style =
+                            MaterialTheme.typography.headlineMedium.copy(
+                                    fontWeight = FontWeight.Bold
+                            ),
+                    color = Color.White
+            )
+            Text(
+                    text = stringResource(R.string.saved_news_subtitle),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.White.copy(alpha = 0.8f)
+            )
         }
     }
 }
 
 @Composable
-private fun SavedArticleCard(article: Article, onClick: () -> Unit, onRemove: () -> Unit) {
+private fun SavedArticleCard(article: Article, categoryColor: Color, onClick: () -> Unit, onRemove: () -> Unit) {
     Card(
             modifier =
                     Modifier.fillMaxWidth()
@@ -187,7 +188,7 @@ private fun SavedArticleCard(article: Article, onClick: () -> Unit, onRemove: ()
                 Text(
                         text = article.sourceName,
                         style = MaterialTheme.typography.labelSmall,
-                        color = GradientStart,
+                        color = categoryColor,
                         fontWeight = FontWeight.SemiBold
                 )
 
@@ -226,7 +227,7 @@ private fun SavedArticleCard(article: Article, onClick: () -> Unit, onRemove: ()
             IconButton(onClick = onRemove, modifier = Modifier.size(40.dp)) {
                 Icon(
                         imageVector = Icons.Default.BookmarkRemove,
-                        contentDescription = "Kayıttan Kaldır",
+                        contentDescription = stringResource(R.string.remove_from_saved),
                         tint = MaterialTheme.colorScheme.error
                 )
             }
@@ -235,17 +236,17 @@ private fun SavedArticleCard(article: Article, onClick: () -> Unit, onRemove: ()
 }
 
 @Composable
-private fun LoadingState() {
+private fun LoadingState(categoryColor: Color) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             CircularProgressIndicator(
-                    color = GradientStart,
+                    color = categoryColor,
                     strokeWidth = 3.dp,
                     modifier = Modifier.size(48.dp)
             )
             Spacer(modifier = Modifier.height(16.dp))
             Text(
-                    text = "Yükleniyor...",
+                    text = stringResource(R.string.loading),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
             )
@@ -254,7 +255,7 @@ private fun LoadingState() {
 }
 
 @Composable
-private fun EmptyState() {
+private fun EmptyState(categoryColor: Color) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -264,17 +265,17 @@ private fun EmptyState() {
                     imageVector = Icons.Outlined.BookmarkBorder,
                     contentDescription = null,
                     modifier = Modifier.size(80.dp),
-                    tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f)
+                    tint = categoryColor.copy(alpha = 0.5f)
             )
             Spacer(modifier = Modifier.height(16.dp))
             Text(
-                    text = "Henüz kayıtlı haber yok",
+                    text = stringResource(R.string.no_saved_news),
                     style = MaterialTheme.typography.titleLarge,
                     color = MaterialTheme.colorScheme.onBackground
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                    text = "Haberleri kaydetmek için detay sayfasındaki bookmark ikonuna tıklayın",
+                    text = stringResource(R.string.no_saved_news_hint),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
                     textAlign = TextAlign.Center

@@ -2,5 +2,6 @@ package com.example.technews.presentation.settings
 
 data class SettingsState(
         val isDarkMode: Boolean = false,
-        val isNotificationsEnabled: Boolean = true
+        val isNotificationsEnabled: Boolean = true,
+        val appLanguage: String = "system" // "system", "tr", "en"
 )

@@ -9,6 +9,7 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,27 +23,29 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Code
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.NotificationsOff
 import androidx.compose.material.icons.filled.Palette
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -61,12 +64,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.technews.ui.theme.GradientEnd
-import com.example.technews.ui.theme.GradientMiddle
 import com.example.technews.ui.theme.GradientStart
 
 @Composable
-fun SettingsScreen(onBackClick: () -> Unit, viewModel: SettingsViewModel = hiltViewModel()) {
+fun SettingsScreen(
+        categoryColor: Color = GradientStart,
+        onLanguageChange: (String) -> Unit = {},
+        viewModel: SettingsViewModel = hiltViewModel()
+) {
         val state by viewModel.state.collectAsState()
         val context = LocalContext.current
 
@@ -102,50 +107,27 @@ fun SettingsScreen(onBackClick: () -> Unit, viewModel: SettingsViewModel = hiltV
                                                 Brush.verticalGradient(
                                                         colors =
                                                                 listOf(
-                                                                        GradientStart,
-                                                                        GradientMiddle
+                                                                        categoryColor,
+                                                                        categoryColor.copy(alpha = 0.8f)
                                                                 )
                                                 )
                                         )
                                         .statusBarsPadding()
                                         .padding(horizontal = 16.dp, vertical = 20.dp)
                 ) {
-                        Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                verticalAlignment = Alignment.CenterVertically
-                        ) {
-                                IconButton(
-                                        onClick = onBackClick,
-                                        modifier =
-                                                Modifier.size(44.dp)
-                                                        .background(
-                                                                Color.White.copy(alpha = 0.2f),
-                                                                CircleShape
-                                                        )
-                                ) {
-                                        Icon(
-                                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                                contentDescription = "Geri",
-                                                tint = Color.White
-                                        )
-                                }
-
-                                Spacer(modifier = Modifier.width(16.dp))
-
-                                Column {
-                                        Text(
-                                                text = "Ayarlar",
-                                                style =
-                                                        MaterialTheme.typography.headlineMedium
-                                                                .copy(fontWeight = FontWeight.Bold),
-                                                color = Color.White
-                                        )
-                                        Text(
-                                                text = "Uygulamayı özelleştirin",
-                                                style = MaterialTheme.typography.bodySmall,
-                                                color = Color.White.copy(alpha = 0.8f)
-                                        )
-                                }
+                        Column {
+                                Text(
+                                        text = "Ayarlar",
+                                        style =
+                                                MaterialTheme.typography.headlineMedium
+                                                        .copy(fontWeight = FontWeight.Bold),
+                                        color = Color.White
+                                )
+                                Text(
+                                        text = "Uygulamayı özelleştirin",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = Color.White.copy(alpha = 0.8f)
+                                )
                         }
                 }
 
@@ -158,25 +140,38 @@ fun SettingsScreen(onBackClick: () -> Unit, viewModel: SettingsViewModel = hiltV
                         verticalArrangement = Arrangement.spacedBy(24.dp)
                 ) {
                         // Appearance Section
-                        SettingsSection(title = "Görünüm", icon = Icons.Default.Palette) {
+                        SettingsSection(title = "Görünüm", icon = Icons.Default.Palette, accentColor = categoryColor) {
                                 PremiumToggleItem(
                                         icon =
                                                 if (state.isDarkMode) Icons.Default.DarkMode
                                                 else Icons.Default.LightMode,
                                         iconTint =
-                                                if (state.isDarkMode) GradientMiddle
-                                                else GradientStart,
+                                                if (state.isDarkMode) categoryColor.copy(alpha = 0.7f)
+                                                else categoryColor,
                                         title = "Karanlık Mod",
                                         description =
                                                 if (state.isDarkMode) "Karanlık tema aktif"
                                                 else "Açık tema aktif",
                                         isChecked = state.isDarkMode,
-                                        onCheckedChange = { viewModel.setDarkMode(it) }
+                                        onCheckedChange = { viewModel.setDarkMode(it) },
+                                        accentColor = categoryColor
+                                )
+                        }
+
+                        // Language Section
+                        SettingsSection(title = "Dil", icon = Icons.Default.Language, accentColor = categoryColor) {
+                                LanguageItem(
+                                        currentLanguage = state.appLanguage,
+                                        accentColor = categoryColor,
+                                        onLanguageSelect = { language ->
+                                                viewModel.setAppLanguage(language)
+                                                onLanguageChange(language)
+                                        }
                                 )
                         }
 
                         // Notifications Section
-                        SettingsSection(title = "Bildirimler", icon = Icons.Default.Notifications) {
+                        SettingsSection(title = "Bildirimler", icon = Icons.Default.Notifications, accentColor = categoryColor) {
                                 PremiumToggleItem(
                                         icon =
                                                 if (state.isNotificationsEnabled &&
@@ -188,7 +183,7 @@ fun SettingsScreen(onBackClick: () -> Unit, viewModel: SettingsViewModel = hiltV
                                                 if (state.isNotificationsEnabled &&
                                                                 hasNotificationPermission
                                                 )
-                                                        GradientStart
+                                                        categoryColor
                                                 else MaterialTheme.colorScheme.onSurfaceVariant,
                                         title = "Günlük Bildirimler",
                                         description = "Uygulamayı açmadığınızda hatırlatma alın",
@@ -208,16 +203,18 @@ fun SettingsScreen(onBackClick: () -> Unit, viewModel: SettingsViewModel = hiltV
                                                 } else {
                                                         viewModel.setNotificationsEnabled(enabled)
                                                 }
-                                        }
+                                        },
+                                        accentColor = categoryColor
                                 )
                         }
 
                         // About Section
-                        SettingsSection(title = "Hakkında", icon = Icons.Default.Info) {
+                        SettingsSection(title = "Hakkında", icon = Icons.Default.Info, accentColor = categoryColor) {
                                 AboutItem(
                                         icon = Icons.Default.Code,
                                         title = "Teknoloji Haberleri",
-                                        subtitle = "Versiyon 1.1.0"
+                                        subtitle = "Versiyon 1.3",
+                                        accentColor = categoryColor
                                 )
 
                                 Spacer(modifier = Modifier.height(12.dp))
@@ -225,7 +222,8 @@ fun SettingsScreen(onBackClick: () -> Unit, viewModel: SettingsViewModel = hiltV
                                 AboutItem(
                                         icon = Icons.Default.Favorite,
                                         title = "Sevgiyle yapıldı",
-                                        subtitle = "© 2024 TechNews"
+                                        subtitle = "© 2024 TechNews",
+                                        accentColor = categoryColor
                                 )
                         }
 
@@ -235,7 +233,7 @@ fun SettingsScreen(onBackClick: () -> Unit, viewModel: SettingsViewModel = hiltV
 }
 
 @Composable
-private fun SettingsSection(title: String, icon: ImageVector, content: @Composable () -> Unit) {
+private fun SettingsSection(title: String, icon: ImageVector, accentColor: Color, content: @Composable () -> Unit) {
         Column {
                 Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -244,7 +242,7 @@ private fun SettingsSection(title: String, icon: ImageVector, content: @Composab
                         Icon(
                                 imageVector = icon,
                                 contentDescription = null,
-                                tint = GradientStart,
+                                tint = accentColor,
                                 modifier = Modifier.size(20.dp)
                         )
                         Spacer(modifier = Modifier.width(8.dp))
@@ -277,7 +275,8 @@ private fun PremiumToggleItem(
         title: String,
         description: String,
         isChecked: Boolean,
-        onCheckedChange: (Boolean) -> Unit
+        onCheckedChange: (Boolean) -> Unit,
+        accentColor: Color
 ) {
         val scale by
                 animateFloatAsState(
@@ -289,7 +288,7 @@ private fun PremiumToggleItem(
         val backgroundColor by
                 animateColorAsState(
                         targetValue =
-                                if (isChecked) GradientStart.copy(alpha = 0.1f)
+                                if (isChecked) accentColor.copy(alpha = 0.1f)
                                 else Color.Transparent,
                         animationSpec = tween(300),
                         label = "backgroundColor"
@@ -312,11 +311,11 @@ private fun PremiumToggleItem(
                                                         Brush.linearGradient(
                                                                 colors =
                                                                         listOf(
-                                                                                GradientStart.copy(
+                                                                                accentColor.copy(
                                                                                         alpha = 0.2f
                                                                                 ),
-                                                                                GradientMiddle.copy(
-                                                                                        alpha = 0.2f
+                                                                                accentColor.copy(
+                                                                                        alpha = 0.15f
                                                                                 )
                                                                         )
                                                         )
@@ -369,8 +368,8 @@ private fun PremiumToggleItem(
                         colors =
                                 SwitchDefaults.colors(
                                         checkedThumbColor = Color.White,
-                                        checkedTrackColor = GradientStart,
-                                        checkedBorderColor = GradientStart,
+                                        checkedTrackColor = accentColor,
+                                        checkedBorderColor = accentColor,
                                         uncheckedThumbColor = Color.White,
                                         uncheckedTrackColor = Color(0xFF4B5563),
                                         uncheckedBorderColor = Color(0xFF6B7280)
@@ -380,7 +379,7 @@ private fun PremiumToggleItem(
 }
 
 @Composable
-private fun AboutItem(icon: ImageVector, title: String, subtitle: String) {
+private fun AboutItem(icon: ImageVector, title: String, subtitle: String, accentColor: Color) {
         Row(
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
                 verticalAlignment = Alignment.CenterVertically
@@ -392,11 +391,11 @@ private fun AboutItem(icon: ImageVector, title: String, subtitle: String) {
                                                 Brush.linearGradient(
                                                         colors =
                                                                 listOf(
-                                                                        GradientStart.copy(
+                                                                        accentColor.copy(
                                                                                 alpha = 0.1f
                                                                         ),
-                                                                        GradientEnd.copy(
-                                                                                alpha = 0.1f
+                                                                        accentColor.copy(
+                                                                                alpha = 0.05f
                                                                         )
                                                                 )
                                                 ),
@@ -408,7 +407,7 @@ private fun AboutItem(icon: ImageVector, title: String, subtitle: String) {
                                 imageVector = icon,
                                 contentDescription = null,
                                 modifier = Modifier.size(24.dp),
-                                tint = GradientStart
+                                tint = accentColor
                         )
                 }
 
@@ -432,3 +431,166 @@ private fun AboutItem(icon: ImageVector, title: String, subtitle: String) {
                 }
         }
 }
+
+@Composable
+private fun LanguageItem(
+        currentLanguage: String,
+        accentColor: Color,
+        onLanguageSelect: (String) -> Unit
+) {
+        var showDialog by remember { mutableStateOf(false) }
+
+        if (showDialog) {
+                LanguageSelectionDialog(
+                        currentLanguage = currentLanguage,
+                        accentColor = accentColor,
+                        onLanguageSelect = { language ->
+                                onLanguageSelect(language)
+                                showDialog = false
+                        },
+                        onDismiss = { showDialog = false }
+                )
+        }
+
+        Row(
+                modifier = Modifier.fillMaxWidth()
+                        .clip(RoundedCornerShape(16.dp))
+                        .clickable { showDialog = true }
+                        .padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically
+        ) {
+                Box(
+                        modifier = Modifier.size(48.dp)
+                                .background(
+                                        Brush.linearGradient(
+                                                colors = listOf(
+                                                        accentColor.copy(alpha = 0.2f),
+                                                        accentColor.copy(alpha = 0.15f)
+                                                )
+                                        ),
+                                        RoundedCornerShape(14.dp)
+                                ),
+                        contentAlignment = Alignment.Center
+                ) {
+                        Icon(
+                                imageVector = Icons.Default.Language,
+                                contentDescription = null,
+                                modifier = Modifier.size(24.dp),
+                                tint = accentColor
+                        )
+                }
+
+                Spacer(modifier = Modifier.width(16.dp))
+
+                Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                                text = "Uygulama Dili",
+                                style = MaterialTheme.typography.titleMedium.copy(
+                                        fontWeight = FontWeight.Medium
+                                ),
+                                color = MaterialTheme.colorScheme.onSurface
+                        )
+                        Spacer(modifier = Modifier.height(2.dp))
+                        Text(
+                                text = "Dili değiştirmek için tıklayın",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                }
+
+                Card(
+                        shape = RoundedCornerShape(8.dp),
+                        colors = CardDefaults.cardColors(
+                                containerColor = accentColor.copy(alpha = 0.15f)
+                        )
+                ) {
+                        Text(
+                                text = getLanguageDisplayName(currentLanguage),
+                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                                style = MaterialTheme.typography.labelMedium.copy(
+                                        fontWeight = FontWeight.SemiBold
+                                ),
+                                color = accentColor
+                        )
+                }
+        }
+}
+
+@Composable
+private fun LanguageSelectionDialog(
+        currentLanguage: String,
+        accentColor: Color,
+        onLanguageSelect: (String) -> Unit,
+        onDismiss: () -> Unit
+) {
+        val languages = listOf(
+                "system" to "Sistem Dili",
+                "tr" to "Türkçe",
+                "en" to "English"
+        )
+
+        AlertDialog(
+                onDismissRequest = onDismiss,
+                title = {
+                        Text(
+                                text = "Dil Seçin",
+                                style = MaterialTheme.typography.titleLarge.copy(
+                                        fontWeight = FontWeight.Bold
+                                )
+                        )
+                },
+                text = {
+                        Column {
+                                languages.forEach { (code, name) ->
+                                        val isSelected = currentLanguage == code
+                                        Row(
+                                                modifier = Modifier
+                                                        .fillMaxWidth()
+                                                        .clip(RoundedCornerShape(12.dp))
+                                                        .background(
+                                                                if (isSelected) accentColor.copy(alpha = 0.1f)
+                                                                else Color.Transparent
+                                                        )
+                                                        .clickable { onLanguageSelect(code) }
+                                                        .padding(16.dp),
+                                                verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                                RadioButton(
+                                                        selected = isSelected,
+                                                        onClick = { onLanguageSelect(code) },
+                                                        colors = RadioButtonDefaults.colors(
+                                                                selectedColor = accentColor,
+                                                                unselectedColor = MaterialTheme.colorScheme.onSurfaceVariant
+                                                        )
+                                                )
+                                                Spacer(modifier = Modifier.width(12.dp))
+                                                Text(
+                                                        text = name,
+                                                        style = MaterialTheme.typography.bodyLarge.copy(
+                                                                fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal
+                                                        ),
+                                                        color = if (isSelected) accentColor else MaterialTheme.colorScheme.onSurface
+                                                )
+                                        }
+                                }
+                        }
+                },
+                confirmButton = {
+                        TextButton(onClick = onDismiss) {
+                                Text("Kapat", color = accentColor)
+                        }
+                },
+                containerColor = MaterialTheme.colorScheme.surface,
+                shape = RoundedCornerShape(20.dp)
+        )
+}
+
+private fun getLanguageDisplayName(languageCode: String): String {
+        return when (languageCode) {
+                "tr" -> "Türkçe"
+                "en" -> "English"
+                "system" -> "Sistem"
+                else -> languageCode
+        }
+}
+

@@ -36,6 +36,13 @@ class SettingsViewModel @Inject constructor(private val preferencesManager: Pref
                     _state.update { it.copy(isNotificationsEnabled = isEnabled) }
                 }
                 .launchIn(viewModelScope)
+
+        preferencesManager
+                .appLanguage
+                .onEach { language ->
+                    _state.update { it.copy(appLanguage = language) }
+                }
+                .launchIn(viewModelScope)
     }
 
     fun setDarkMode(enabled: Boolean) {
@@ -44,5 +51,9 @@ class SettingsViewModel @Inject constructor(private val preferencesManager: Pref
 
     fun setNotificationsEnabled(enabled: Boolean) {
         viewModelScope.launch { preferencesManager.setNotificationsEnabled(enabled) }
+    }
+
+    fun setAppLanguage(language: String) {
+        viewModelScope.launch { preferencesManager.setAppLanguage(language) }
     }
 }
